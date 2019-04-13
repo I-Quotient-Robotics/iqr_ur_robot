@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Roboti Description -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find iqr_4k_description)/urdf/iqr_4k_robot.urdf.xacro" />
+  
+  <!-- Universal Robots UR5 Setup -->
+  <include file="$(find iqr_4d_bringup)/launch/include/ur5.launch.xml">
+    <arg name="prefix" value="ur5_arm_" />
+    <arg name="robot_ip" value="192.168.12.111" />
+    <arg name="min_payload" value="0.0" />
+    <arg name="max_payload" value="5.0" />
+  </include>
+
+  <!-- Intel Realsense D435 Setup -->
+  <include file="$(find realsense2_camera)/launch/rs_rgbd.launch" />
+
+  <!-- Robotiq 85 Gripper Setup -->
+  <node pkg="robotiq_85_driver" type="robotiq_85_driver" name="robotiq_85_driver" respawn="true" output="screen">
+    <param name="num_grippers" value="1" />
+    <param name="comport" value="/dev/ttyUSB0" />
+    <param name="baud" value="115200" />
+    <param name="prefix" value="" />
+  </node>
+
+  <!-- Robotiq ft300 Setup -->
+  <node pkg="robotiq_force_torque_sensor" type="rq_sensor" name="robotiq_ft300_driver" respawn="true" output="screen" />
+
+  <!-- Joint State Publisher -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+     <rosparam param="source_list">[/gripper/joint_states,/joint_states]</rosparam>
+  </node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+</launch>

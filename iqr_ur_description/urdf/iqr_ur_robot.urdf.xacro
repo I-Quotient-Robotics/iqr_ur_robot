@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<robot name="iqr_ur_robot" 
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Include accessories -->
+  <xacro:include filename="$(find ur_description)/urdf/ur5.urdf.xacro" />
+  <xacro:include filename="$(find realsense2_camera)/urdf/_d435.urdf.xacro"/>
+  <xacro:include filename="$(find iqr_ur_description)/urdf/plates.urdf.xacro" />
+  <xacro:include filename="$(find iqr_ur_description)/urdf/robotiq_ft300.urdf.xacro" />
+  <xacro:include filename="$(find iqr_ur_description)/urdf/realsense_plate.urdf.xacro" />
+  <xacro:include filename="$(find iqr_ur_description)/urdf/robotiq_gripper_base.urdf.xacro" />
+  <xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
+
+  <link name="base_link"/>
+
+  <!-- ur plates -->
+  <xacro:plates parent="base_link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:plates>
+
+  <!-- Universal Robot UR5 -->
+  <xacro:ur5_robot prefix="ur5_arm_" joint_limited="true"/>
+  <joint name="ur5_arm_base" type="fixed">
+    <parent link="plates_ur_surface" />
+    <child link="ur5_arm_base_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 3.1415926" />
+  </joint>
+
+  <!-- TCP link -->
+  <link name="tcp_link"/>
+  <joint name="tcp_link_joint" type="fixed">
+    <origin xyz="0.20 0 0" rpy="0 0 0"/>
+    <parent link="ur5_arm_ee_link"/>
+    <child link="tcp_link"/>
+  </joint>
+
+  <!-- realsense d435 plate -->
+  <xacro:realsense_plate parent="ur5_arm_ee_link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:realsense_plate>
+
+  <!-- realsense d435 -->
+  <sensor_d435 parent="realsense_plate_surface">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </sensor_d435>
+
+  <!-- robotiq ft300 -->
+  <xacro:robotiq_ft300 parent="ur5_arm_ee_link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:robotiq_ft300>
+
+  <!-- robotiq robotiq gripper base -->
+  <xacro:robotiq_gripper_base parent="robotiq_ft300_surface">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:robotiq_gripper_base>
+
+  <!-- robotiq 85 gripper -->
+  <xacro:robotiq_85_gripper prefix="" parent="robotiq_gripper_base_surface">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:robotiq_85_gripper>
+
+</robot>
